@@ -1,10 +1,4 @@
-<?php require 'inc/header.php';
-$sorgu = $conn->prepare("SELECT * FROM ayarlar");
-$sorgu -> execute();
-$ayar = $sorgu->fetch(PDO::FETCH_ASSOC);
-
-
-?>
+<?php require 'inc/header.php';?>
 
 <div class="container-fluid">
     <div class="row">

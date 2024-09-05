@@ -29,20 +29,22 @@ if (isset($_POST['ayarkaydet'])) {
         'site_sifre' => $site_sifre
     ));
 
-    if ($_FILES['site_logo']['error']=="0") {
-		$gecici_isim=$_FILES['site_logo']['tmp_name'];
-		$dosya_ismi=rand(100000,999999).$_FILES['site_logo']['name'];
-		move_uploaded_file($gecici_isim,"../dosyalar/$dosya_ismi");
+    if ($_FILES['site_logo']['error'] == "0") {
+        $gecici_isim = $_FILES['site_logo']['tmp_name'];
+        $dosya_ismi = rand(100000, 999999) . $_FILES['site_logo']['name'];
+        move_uploaded_file($gecici_isim, "../dosyalar/$dosya_ismi");
 
-		$sorgu=$conn->prepare("UPDATE ayarlar SET 
+        $sorgu = $conn->prepare("UPDATE ayarlar SET 
 			site_logo=:site_logo WHERE id=1
 			");
 
-		$sonuc=$sorgu->execute(array(
-			'site_logo' => $dosya_ismi,
+        $sonuc = $sorgu->execute(array(
+            'site_logo' => $dosya_ismi,
 
-		));
+        ));
     }
+
+    
 
     if ($sonuc) {
         header("location:../ayarlar.php?durum=ok");
@@ -50,4 +52,29 @@ if (isset($_POST['ayarkaydet'])) {
         header("location:../ayarlar.php?durum=no");
     }
     exit;
+
 }
+
+/********************************************************/
+
+if (isset($_POST['oturumacma'])) {
+	$sorgu=$db->prepare("SELECT * FROM kullanicilar WHERE kul_mail=:kul_mail AND kul_sifre=:kul_sifre");
+	$sorgu->execute(array(
+		'kul_mail' => $_POST['kul_mail'],
+		'kul_sifre' => md5($_POST['kul_sifre'])
+	));
+	$sonuc=$sorgu->rowcount();
+	$kullanici=$sorgu->fetch(PDO::FETCH_ASSOC);
+
+	if ($sonuc==0) {
+		header("location:../index.php?durum=no");
+	} else {
+		$_SESSION['kul_isim'] = $kullanici['kul_isim'];
+		$_SESSION['kul_mail'] = $kullanici['kul_mail'];
+		$_SESSION['kul_id'] = $kullanici['kul_id'];
+		header("location:../index.php?durum=ok");
+	}
+	exit;
+}
+
+/********************************************************/
